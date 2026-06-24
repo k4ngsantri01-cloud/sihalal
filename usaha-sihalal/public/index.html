@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usaha Sihalal</title>
+  <link rel="preconnect" href="https://unpkg.com" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div>
+        <h1>Usaha Sihalal</h1>
+        <p>Input data usaha modern dengan GPS, peta, validasi, edit, hapus, dan penyimpanan langsung ke Google Sheets.</p>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Form Input Usaha</h2>
+        <form id="form-usaha">
+          <input type="hidden" name="id" value="" />
+
+          <div class="field">
+            <label for="nama">Nama Pemilik</label>
+            <input type="text" name="nama" id="nama" placeholder="Masukkan nama pemilik" />
+            <div class="invalid-feedback" data-error-for="nama"></div>
+          </div>
+
+          <div class="field">
+            <label for="nama_usaha">Nama Usaha</label>
+            <input type="text" name="nama_usaha" id="nama_usaha" placeholder="Masukkan nama usaha" />
+            <div class="invalid-feedback" data-error-for="nama_usaha"></div>
+          </div>
+
+          <div class="field">
+            <label for="nama_produk">Nama Produk</label>
+            <input type="text" name="nama_produk" id="nama_produk" placeholder="Masukkan produk utama" />
+            <div class="invalid-feedback" data-error-for="nama_produk"></div>
+          </div>
+
+          <div class="input-group">
+            <div class="field">
+              <label for="tahun_berdiri">Tahun Berdiri</label>
+              <input type="number" name="tahun_berdiri" id="tahun_berdiri" placeholder="2020" min="1900" max="2026" />
+              <div class="invalid-feedback" data-error-for="tahun_berdiri"></div>
+            </div>
+            <div class="field">
+              <label for="no_hp">Nomor HP</label>
+              <input type="tel" name="no_hp" id="no_hp" placeholder="08xxxxxxxxxx atau +628xxxxxxxxxx" />
+              <div class="invalid-feedback" data-error-for="no_hp"></div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="alamat">Alamat Lokasi</label>
+            <textarea name="alamat" id="alamat" placeholder="Alamat lengkap atau hasil reverse geocoding"></textarea>
+          </div>
+
+          <div class="input-group">
+            <div class="field">
+              <label for="latitude">Latitude</label>
+              <input type="text" name="latitude" id="latitude" placeholder="-6.200000" readonly />
+              <div class="invalid-feedback" data-error-for="latitude"></div>
+            </div>
+            <div class="field">
+              <label for="longitude">Longitude</label>
+              <input type="text" name="longitude" id="longitude" placeholder="106.816666" readonly />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="status_lokasi">Status Lokasi</label>
+            <select name="status_lokasi" id="status_lokasi">
+              <option value="">Pilih status</option>
+              <option value="auto">Auto</option>
+              <option value="manual">Manual</option>
+            </select>
+            <div class="invalid-feedback" data-error-for="status_lokasi"></div>
+          </div>
+
+          <div id="map-component"></div>
+
+          <div class="button-group">
+            <button type="submit" class="button">Simpan Data</button>
+            <button type="button" class="button-secondary" id="btn-reset">Reset Form</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <div class="search-wrapper">
+          <input id="search-input" type="search" placeholder="Cari nama, usaha, produk, atau HP" />
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Nama</th>
+                <th>Usaha</th>
+                <th>Produk</th>
+                <th>No HP</th>
+                <th>Tahun</th>
+                <th>Alamat</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="edit-modal">
+    <div class="modal">
+      <h3>Edit Data Usaha</h3>
+      <form id="edit-form">
+        <input type="hidden" name="id" value="" />
+        <div class="field">
+          <label for="edit-nama">Nama Pemilik</label>
+          <input type="text" name="nama" id="edit-nama" />
+          <div class="invalid-feedback" data-error-for="nama"></div>
+        </div>
+        <div class="field">
+          <label for="edit-nama_usaha">Nama Usaha</label>
+          <input type="text" name="nama_usaha" id="edit-nama_usaha" />
+          <div class="invalid-feedback" data-error-for="nama_usaha"></div>
+        </div>
+        <div class="field">
+          <label for="edit-nama_produk">Nama Produk</label>
+          <input type="text" name="nama_produk" id="edit-nama_produk" />
+          <div class="invalid-feedback" data-error-for="nama_produk"></div>
+        </div>
+        <div class="input-group">
+          <div class="field">
+            <label for="edit-tahun_berdiri">Tahun Berdiri</label>
+            <input type="number" name="tahun_berdiri" id="edit-tahun_berdiri" min="1900" max="2026" />
+            <div class="invalid-feedback" data-error-for="tahun_berdiri"></div>
+          </div>
+          <div class="field">
+            <label for="edit-no_hp">Nomor HP</label>
+            <input type="tel" name="no_hp" id="edit-no_hp" />
+            <div class="invalid-feedback" data-error-for="no_hp"></div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="edit-alamat">Alamat Lokasi</label>
+          <textarea name="alamat" id="edit-alamat"></textarea>
+        </div>
+        <input type="hidden" name="latitude" id="edit-latitude" value="" />
+        <input type="hidden" name="longitude" id="edit-longitude" value="" />
+        <div class="field">
+          <label for="edit-status_lokasi">Status Lokasi</label>
+          <select name="status_lokasi" id="edit-status_lokasi">
+            <option value="">Pilih status</option>
+            <option value="auto">Auto</option>
+            <option value="manual">Manual</option>
+          </select>
+          <div class="invalid-feedback" data-error-for="status_lokasi"></div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="button-secondary" data-close-modal="true">Batal</button>
+          <button type="submit" class="button">Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="delete-modal">
+    <div class="modal">
+      <h3>Hapus Data</h3>
+      <p>Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.</p>
+      <div class="modal-actions">
+        <button type="button" class="button-secondary" data-close-modal="true">Batal</button>
+        <button type="button" class="button-danger" id="btn-delete-confirm">Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" role="status">
+    <strong class="toast-title"></strong>
+    <p class="toast-message"></p>
+  </div>
+
+  <div class="loading-overlay">
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <span>Memproses...</span>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
